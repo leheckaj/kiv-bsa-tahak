@@ -278,4 +278,21 @@ cp ./bsa-server-psk.key /etc/openvpn/
 ip a a 192.168.4.160/24 dev enp0s3 
 
 OBA: openvpn --config bsa-server-psk.conf &
+
+.... asi řešit nebudeme
+```
+
+## GPG
+```bash
+openssl genrsa -out key.pem 4096 
+openssl rsa -in key.pem -pubout > key.pub 
+
+# Vytvoření souboru k podepsání
+dd if=/dev/urandom of=file.bin bs=1M count=5 
+
+# Podpis souboru
+openssl dgst -sign key.pem -keyform PEM -sha256 -out file.bin.sign -binary file.bin 
+
+# Ověření
+openssl dgst -verify key.pub -keyform PEM -sha256 -signature file.bin.sign --binary file.bin 
 ```
