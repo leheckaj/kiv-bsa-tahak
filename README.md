@@ -178,7 +178,7 @@ dc=admin,dc=jarda,dc=bsa
 CA jednoduse (Easy RSA - 2.0)
 apt install easy-rsa -y
 mkdir -p /etc/ca 
-cp -r /usr/share/easy-rsa/ /etc/CA2
+cp -r /usr/share/easy-rsa/ /etc/ca
 
 cp    vars.example vars
 vim vars
