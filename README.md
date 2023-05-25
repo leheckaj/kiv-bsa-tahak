@@ -11,10 +11,8 @@ mkdir ~/.ssh
 apt-get install curl
 curl https://gitlab.com/leheckaj.keys >> ~/.ssh/authorized_keys
 
-echo "PermitRootLogin yes
-StrictModes yes
-RSAAuthentication yes
-PubkeyAuthentication yes
+echo "PermitRootLogin without-password
+AloowUsers root
 PasswordAuthentication no" >> /etc/ssh/sshd_config
 
 service sshd restart
