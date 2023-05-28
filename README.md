@@ -218,13 +218,51 @@ openssl rsa -in /etc/ca/pki/private/server.jarda.bsa.key -out /etc/ca/pki/privat
 Heslo123.
 
 vim /etc/nginx/sites-available/default
----------------------------------------
+--------------------------------------
 ssl_certificate /etc/ca/pki/issued/server.jarda.bsa.crt;  
 ssl_certificate_key /etc/ca/pki/private/server.jarda.bsa.key; 
+
+echo "server{
+      listen 8443 default_server;
+      
+      ssl_certificate /etc/ca/pki/issued/server.jarda.bsa.crt;
+      ssl_certificate_key /etc/ca/pki/private/server.jarda.bsa.key; 
+      
+      root /var/www/html;
+      
+      index index.html index.htm;
+ }" > /etc/nginx/sites-available/defaultSSL
 
 
 nginx -t
 service nginx restart
+```
+
+## Apache2 SSL
+```bash
+apt install apache2
+a2enmod ssl
+cd /etc/apache2/sites-available/
+
+./easyrsa build-server-full server.jarda.bsa 
+openssl rsa -in /etc/ca/pki/private/server.jarda.bsa.key -out /etc/ca/pki/private/server.jarda.bsa.key
+
+echo "
+	<VirtualHost _default_:8543>
+		DocumentRoot /var/www/html
+		ErrorLog /error.log
+		CustomLog /access.log combined
+		SSLEngine on
+
+		SSLCertificateFile	/etc/ca/pki/issued/server.jarda.bsa.crt
+		SSLCertificateKeyFile /etc/ca/pki/private/server.jarda.bsa.key
+
+	</VirtualHost>" > /etc/apache2/sites-enabled/ssl.conf
+
+echo "Listen 8543" >> /etc/apache/ports.conf
+
+a2ensite ssl
+service apache2 restart
 ```
 
 ## Stunnel 4
@@ -236,7 +274,7 @@ echo "[https]
 accept=8443
 connect=80
 cert=/etc/ca/pki/issued/server.jarda.bsa.crt
-key = /etc/ca/pki/private/server.jarda.bsa.key" >> /etc/stunnel/stunnel.conf
+key=/etc/ca/pki/private/server.jarda.bsa.key" >> /etc/stunnel/stunnel.conf
 
 service stunnel4 restart
 https://leheckaj-lin-exam.spos.sgfl.xyz:8443
@@ -276,6 +314,9 @@ cp ./bsa-server-psk.key /etc/openvpn/
 ip a a 192.168.4.160/24 dev enp0s3 
 
 OBA: openvpn --config bsa-server-psk.conf &
+
+openssl rsa -in /etc/ca/pki/private/vpn.jarda.bsa.key -out /etc/ca/pki/private/vpn.jarda.bsa.key
+cp pki/ca.crt pki/issued/vpn.jarda.bsa.crt pki/private/vpn.jarda.bsa.key pki/dh.pem /etc/openvpn
 
 .... asi řešit nebudeme
 ```
