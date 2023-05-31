@@ -335,3 +335,36 @@ openssl dgst -sign key.pem -keyform PEM -sha256 -out file.bin.sign -binary file.
 # Ověření
 openssl dgst -verify key.pub -keyform PEM -sha256 -signature file.bin.sign --binary file.bin 
 ```
+
+
+## Logování
+```bash
+apt-get install rsyslog
+
+mkdir /var/log/logdir
+Otevřeme nastavení:
+vim /etc/rsyslog.conf
+-----------------------
+Při vlastním logování mail zakomentovat:
+mail.*
+mail.info
+mail.error
+mail.warn
+
+Přidáme do souboru /etc/rsyslog.conf toto:
+---------------------------------------
+# rozdeleni logu do adresaru
+$template HourlyMailLog,"/var/log/logdir/%$YEAR%/%$MONTH%/%$DAY%/%HOSTNAME%_mail.log"
+# formatovani logu
+$template SyslFormat,"%timegenerated% %HOSTNAME%  %syslogtag%%msg 
+# zapis logu do souboru dle definice a formatu
+mail.*                                                  -?HourlyMailLog;SyslFormat
+----------------------------------------------------------------------------------
+
+v Linuxu:
+systemctl restart rsyslog
+echo "Toto je zprava" | logger -p mail.err
+cat /var/log/logdir/2023/05/31/lehecka-base_mail.log
+
+https://unix.stackexchange.com/questions/21041/add-new-syslog-facility
+```
