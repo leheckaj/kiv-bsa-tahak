@@ -321,7 +321,47 @@ openssl rsa -in /etc/ca/pki/private/vpn.jarda.bsa.key -out /etc/ca/pki/private/v
 cp pki/ca.crt pki/issued/vpn.jarda.bsa.crt pki/private/vpn.jarda.bsa.key pki/dh.pem /etc/openvpn
 
 .... asi řešit nebudeme
+
+
 ```
+
+SERVER
+```
+echo "port 1194
+proto udp
+dev tun
+user nobody
+group nogroup
+persist-key
+persist-tun
+keepalive 10 120
+topology subnet
+server 10.8.0.0 255.255.255.0
+ifconfig-pool-persist ipp.txt
+push "dhcp-option DNS 192.168.20.1"
+push "dhcp-option DNS 10.111.128.255"
+push "redirect-gateway def1 bypass-dhcp"
+dh none
+ecdh-curve prime256v1
+tls-crypt tls-crypt.key
+crl-verify crl.pem
+ca ca.crt
+cert server_EY1hbgwBYfCj7YJG.crt
+key server_EY1hbgwBYfCj7YJG.key
+auth SHA256
+cipher AES-128-GCM
+ncp-ciphers AES-128-GCM
+tls-server
+tls-version-min 1.2
+tls-cipher TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256
+client-config-dir /etc/openvpn/ccd
+status /var/log/openvpn/status.log
+verb 3" > /etc/openvpn/server.conf
+
+
+
+```
+
 
 ## GPG
 ```bash
