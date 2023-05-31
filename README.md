@@ -272,6 +272,8 @@ service apache2 restart
 apt install stunnel4
 cp /usr/share/doc/stunnel4/examples/stunnel.conf-sample /etc/stunnel/stunnel.conf
 
+SMAZAT ÚPLNĚ VŠE KOLEM gmailu V TOMTO SOUBORU AKORÁT PŘIDAT TOTO:
+
 echo "[https]
 accept=8443
 connect=80
