@@ -317,10 +317,16 @@ openvpn --genkey secret keys/ta.key
 cp pki/ca.crt pki/issued/vpn.jarda.bsa.crt pki/private/vpn.jarda.bsa.key pki/dh.pem /etc/openvpn
 cp keys/ta.key /etc/openvpn/
 
+----------------
+----------------
+---------------
 
 openssl rsa -in /etc/ca/pki/private/vpn.jarda.bsa.key -out /etc/ca/pki/private/vpn.jarda.bsa.key
 cp pki/ca.crt pki/issued/vpn.jarda.bsa.crt pki/private/vpn.jarda.bsa.key pki/dh.pem /etc/openvpn
 
+-------------------------
+--------------------------
+------------------------
 -------------
 ./easyrsa build-server-full vpn_server nopass
 ./easyrsa sign-req server vpn_server              /etc/ca/pki/issued/vpn_server.crt
@@ -357,6 +363,50 @@ cp private/Alice.pem /etc/openvpn/client/alice
 cd /etc/openvpn/client/alice
 
 killall openvpn
+-------------------------------------
+https://simplificandoredes.com/en/install-open-vpn-on-linux/
+------------------------------------
+--------------------------------------
+echo "client
+dev tun
+proto udp
+remote 192.168.20.244 1194
+remote-cert-tls server
+nobind
+persist-key
+persist-tun
+comp-lzo
+verb 3
+tls-auth ta.key 1
+
+<ca>" > client.conf
+
+cat ca.key >> client.conf
+
+echo "</ca>
+
+<cert>" >> client.conf
+
+sed -ne '
+   /-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p      # got the range, ok
+   /-END CERTIFICATE-/q                            # bailing out soon as the cert end seen
+' vpn.jarda.bsa.crt >> client.conf
+
+
+echo "</cert>
+
+<key>" >> client.conf
+
+cat vpn.jarda.bsa.key >> client.conf
+
+echo "</key>" >> client.conf
+
+
+
+
+
+
+
 ```
 
 
