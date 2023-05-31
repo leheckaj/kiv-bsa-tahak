@@ -176,12 +176,13 @@ dc=admin,dc=jarda,dc=bsa
 CA jednoduse (Easy RSA - 2.0)
 apt install easy-rsa -y
 mkdir -p /etc/ca 
-cp -r /usr/share/easy-rsa/ /etc/ca
+cp -r /usr/share/easy-rsa/* /etc/ca
 
 cp    vars.example vars
 vim vars
 -------------------------
-Nastavení PKI directory, opensssl directory and command
+můžeme, ale nemusíme Nastavení PKI directory, opensssl directory and command
+hlavně:
 set_var EASYRSA_REQ_COUNTRY .... atd.
 
 esay rsa key size ......4k klíč nedává java8 
@@ -191,11 +192,10 @@ set_var  cert expire --- 2 roky expirace
 ./easyrsa
 
 # Init vytváření certifikátu instance
-/etc/ca/easyrsa init-pki
-===> vytvoří složku /etc/ca/pki/   --- příprava na udělování
-/etc/ca/easyrsa build-ca ---- toto držet tajné
-Heslo:Heslo123.
+./easyrsa init-pki                   ===> vytvoří složku /etc/ca/pki/   --- příprava na udělování
+./easyrsa build-ca 	             ---- toto držet tajné 
 
+Heslo:Heslo123.
 Common name: BSA Certificate Authority  nebo cokoliv jiného
 Toto /etc/ca/pki/ca.crt je to privátní klíč -> se dává do chromu
 
@@ -203,6 +203,8 @@ Toto /etc/ca/pki/ca.crt je to privátní klíč -> se dává do chromu
 PEM heslo (x2) + heslo certifikační autority
 
 Certifikáty vydávané ven jsou bez hesla:
+openssl rsa -in /etc/ca/pki/private/ca.key -out /etc/ca/pki/private/ca.key.in
+
 openssl rsa -in /etc/ca/pki/private/ca.key -out /etc/ca/pki/private/ca.key.in
 
 # Klíč
