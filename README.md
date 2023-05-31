@@ -301,67 +301,62 @@ crontab -e
 @reboot iptables-restore /etc/network/iptables
 ```
 
-## OpenVPN - preshared key
+## OpenVPN
 ```bash
-# Oba pocitace 
-wget https://raw.githubusercontent.com/jindrichskupa/kiv-bsa/master/cv05-openvpn/bsa-server-psk.conf 
+cd /etc/ca
 
-vim bsa-server-psk.conf 
-Vyhodit comp lzo 
-nastavit remote
-route - navíc u serveru
+./easyrsa init-pki
+./easyrsa build-ca
 
-# Server
-Pak vytovrime klic 
-openvpn --genkey secret bsa-server-psk.key 
-cp ./bsa-server-psk.key /etc/openvpn/
-ip a a 192.168.4.160/24 dev enp0s3 
+./easyrsa gen-req vpn.jarda.bsa
+./easyrsa sign server vpn.jarda.bsa
+openssl rsa -in vpn.jarda.bsa.key -out vpn.jarda.bsa.key
+./easyrsa gen-dh
+mkdir keys
+openvpn --genkey secret keys/ta.key
+cp pki/ca.crt pki/issued/vpn.jarda.bsa.crt pki/private/vpn.jarda.bsa.key pki/dh.pem /etc/openvpn
+cp keys/ta.key /etc/openvpn/
 
-OBA: openvpn --config bsa-server-psk.conf &
 
 openssl rsa -in /etc/ca/pki/private/vpn.jarda.bsa.key -out /etc/ca/pki/private/vpn.jarda.bsa.key
 cp pki/ca.crt pki/issued/vpn.jarda.bsa.crt pki/private/vpn.jarda.bsa.key pki/dh.pem /etc/openvpn
 
-.... asi řešit nebudeme
+-------------
+./easyrsa build-server-full vpn_server nopass
+./easyrsa sign-req server vpn_server              /etc/ca/pki/issued/vpn_server.crt
+/easyrsa gen-dh                                   /etc/ca/pki/dh.pem
+openvpn --genkey tls-crypt-v2-server pki/private/vpn_server.pem
+cd /etc/openvpn/server
+cd /etc/ca/pki/
+cp ca.crt /etc/openvpn/server/
+cp dh.pem /etc/openvpn/server/
+cp issued/vpn_server.crt /etc/openvpn/server/
+cd /etc/ca/pki/private/
+cp vpn_server.key /etc/openvpn/server/
+cp vpn_server.pem /etc/openvpn/server/
+cd /etc/ca/pki/issued/
+cp vpn_server.crt /etc/openvpn/server/
 
+echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
+sysctl -p
 
-```
+systemctl start openvpn-server@server.service
 
-SERVER
-```
-echo "port 1194
-proto udp
-dev tun
-user nobody
-group nogroup
-persist-key
-persist-tun
-keepalive 10 120
-topology subnet
-server 10.8.0.0 255.255.255.0
-ifconfig-pool-persist ipp.txt
-push "dhcp-option DNS 192.168.20.1"
-push "dhcp-option DNS 10.111.128.255"
-push "redirect-gateway def1 bypass-dhcp"
-dh none
-ecdh-curve prime256v1
-tls-crypt tls-crypt.key
-crl-verify crl.pem
-ca ca.crt
-cert server_EY1hbgwBYfCj7YJG.crt
-key server_EY1hbgwBYfCj7YJG.key
-auth SHA256
-cipher AES-128-GCM
-ncp-ciphers AES-128-GCM
-tls-server
-tls-version-min 1.2
-tls-cipher TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256
-client-config-dir /etc/openvpn/ccd
-status /var/log/openvpn/status.log
-verb 3" > /etc/openvpn/server.conf
+cd /etc/ca
+./easyrsa gen-req Alice nopass
+./easyrsa sign-req client Alice
+cd pki
+openvpn --tls-crypt-v2 private/vpn_server.pem --genkey tls-crypt-v2-client private/Alice.pem
 
+mkdir /etc/openvpn/client/alice
+cd /etc/ca/pki
+cp ca.crt /etc/openvpn/client/alice
+cp issued/Alice.crt /etc/openvpn/client/alice
+cp private/Alice.key /etc/openvpn/client/alice
+cp private/Alice.pem /etc/openvpn/client/alice
+cd /etc/openvpn/client/alice
 
-
+killall openvpn
 ```
 
 
