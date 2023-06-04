@@ -456,6 +456,8 @@ gpg --export
 gpg --list-keys
 gpg --list-sigs
 
+gpg --sign --encrypt ahoj.txt
+gpg --verify ahoj.txt.sig
 
 
 ```
