@@ -76,6 +76,10 @@ cryptsetup luksHeaderRestore /dev/data/database --header-backup-file /mnt/vgbsa_
 # Další 
 $ cryptsetup luksRemoveKey /dev/vgbsa/test 
 $ cryptsetup luksKillSlot /dev/vgbsa/test 6 
+
+lvremove /dev/data/encrypted
+vgremove data
+pvremove data /dev/vdb
 ```
 
 ## LDAP
