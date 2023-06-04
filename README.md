@@ -410,7 +410,7 @@ echo "</key>" >> client.conf
 ```
 
 
-## GPG
+## OpenSSL
 ```bash
 openssl genrsa -out key.pem 4096 
 openssl rsa -in key.pem -pubout > key.pub 
@@ -425,6 +425,40 @@ openssl dgst -sign key.pem -keyform PEM -sha256 -out file.bin.sign -binary file.
 openssl dgst -verify key.pub -keyform PEM -sha256 -signature file.bin.sign --binary file.bin 
 ```
 
+## GPG
+```bash
+gpg --full-generate-key
+
+apt install rng-tools
+
+apt-get install gnupg
+gpg --gen-key
+	Jaroslav Lehecka
+	jarda@bsa-150.kiv.zcu.cz
+P
+	Passpharase: Heslo123.
+
+
+ID:0A70A01AEB498812FFD86DAFE650F5122C482AAF
+Selektor e-mail: jarda@bsa-150.kiv.zcu.cz
+
+gpg --armor --output bsa-user.gpg --export jarda@bsa-150.kiv.zcu.cz
+
+
+echo "DDDDD" > ahoj.txt
+gpg -e ahoj.txt
+	jarda@bsa-150.kiv.zcu.cz
+gpg -d ahoj.txt.gpg
+
+
+gpg --import
+gpg --export
+gpg --list-keys
+gpg --list-sigs
+
+
+
+```
 
 ## Logování
 ```bash
@@ -456,4 +490,8 @@ echo "Toto je zprava" | logger -p mail.err
 cat /var/log/logdir/2023/05/31/lehecka-base_mail.log
 
 https://unix.stackexchange.com/questions/21041/add-new-syslog-facility
+```
+
+## OpenDKIM
+```bash
 ```
