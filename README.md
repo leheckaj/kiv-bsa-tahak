@@ -76,10 +76,34 @@ cryptsetup luksHeaderRestore /dev/data/database --header-backup-file /mnt/vgbsa_
 # Další 
 $ cryptsetup luksRemoveKey /dev/vgbsa/test 
 $ cryptsetup luksKillSlot /dev/vgbsa/test 6 
-
+---------------------------------------------------------------------------------
+crypttab
+---------------------------------------------------------------------------------
 lvremove /dev/data/encrypted
 vgremove data
 pvremove data /dev/vdb
+
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+apt install cryptsetup lvm2
+
+lsblk
+pvcreate /dev/sd{b,c,d}
+vgcreate data /dev/sd{b,c,d}
+lvcreate -n encrypted -L 120M data
+cryptsetup -y -v luksFormat /dev/data/encrypted
+cryptsetup luksAddKey /dev/data/encrypted db.key
+cryptsetup luksOpen /dev/data/encrypted decrypted --key-file db.key
+mkfs.ext4 /dev/mapper/decrypted
+mkdir /mnt/
+mount /dev/mapper/decrypted /mnt
+
+lsblk
+
+umount /mnt
+cryptsetup luksClose /dev/mapper/decrypted
 ```
 
 ## LDAP
