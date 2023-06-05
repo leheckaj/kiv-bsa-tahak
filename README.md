@@ -616,3 +616,23 @@ poslední věc říká co dělat když to nejde odtud
 -all :vše zahoď
 ~all :funguje ale omarkuje
 ```
+
+## SPF
+```bind
+apt -y install dnsmasq
+
+echo "34.171.207.246 private.jarda.bsa
+34.171.207.246 public.jarda.bsa" > /etc/dnsmasq.hosts
+
+echo "listen-address=127.0.0.1
+listen-address=10.0.10.4
+bind-interfaces
+log-queries
+addn-hosts=/etc/dnsmasq.hosts" >>  /etc/dnsmasq.conf
+
+service dnsmasq restart
+
+dig @localhost ci.example.com +short
+
+dig ci.example.com +short
+```
