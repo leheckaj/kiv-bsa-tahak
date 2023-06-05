@@ -576,7 +576,7 @@ zone "lubos.bsa." in {
 };
 ```
 
-## DNSSec
+## DNSSec -  nefunguje
 ```bsah
 Entropie:
 apt-get install haveged -y
@@ -604,7 +604,7 @@ rndc signing -list jarda.bsa
 rndc signing -nsec3param 1 0 10 deadbeef jarda.bsa 
 ```
 
-## SPF
+## SPF - funguje
 ```bind
 echo "
 @  	IN 	TXT 	\"v=spf1 mx a:server.bsa-jindra.bsa ~all\"" >> /etc/bind/db.$domain
@@ -617,7 +617,7 @@ poslední věc říká co dělat když to nejde odtud
 ~all :funguje ale omarkuje
 ```
 
-## SPF
+## DNSMASQ
 ```bind
 apt -y install dnsmasq
 
