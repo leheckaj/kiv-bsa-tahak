@@ -329,10 +329,84 @@ crontab -e
 @reboot iptables-restore /etc/network/iptables
 ```
 
-## OpenVPN - P2P
+## OpenVPN - P2P - Server
 ```bash
+wget https://raw.githubusercontent.com/leheckaj/kiv-bsa-tahak/main/bsa-server-psk.conf
+Přepsat remote !!!!!
 
+Buď vytvořit klíč: openvpn --genkey --secret bsa-server-psk.key
+nebo:
+echo "#
+# 2048 bit OpenVPN static key
+#
+-----BEGIN OpenVPN Static key V1-----
+412429f8a9a3fb26b80ccd178d5ba8e4
+d962625c17f3ef018d53545bcd8acbce
+f70de26192839d7f7252380fd7aefbd1
+65ee4998322de93b37ebcb01af3348a1
+4019f4ad52505f94034dd632d92a3d27
+b90342c0cb844c8d77b54076dad6435f
+57fce476cdaff267497f701ad49ee9f6
+bdac321a23d5c0ae9b4cbfb3924f390a
+14187686798a57b6d0988ecbb4208f50
+12fec1833c45153b03ba3f4953b05540
+53fc9ec40ecf398269b4ee25b8aec87b
+aef8f5702d0ec73abe773edf876bbfd9
+bcc38eadedb0d3590b8461648a21ef08
+76cca880b240a5f7331787a172959fe2
+6bf3bce96725bfcbe05dbcf9dd626902
+bc8a48856b063f6dbbade49833f90545
+-----END OpenVPN Static key V1-----" > /etc/openvpn/bsa-server-psk.key
+
+ip a a 192.168.4.160/24 dev ens18 
+
+openvpn --config bsa-server-psk.conf &
+kilall -9 openvpn
+
+ip a del 192.168.4.160/24 dev ens18 
 ```
+
+## OpenVPN - P2P - Klient
+```bash
+wget https://raw.githubusercontent.com/leheckaj/kiv-bsa-tahak/main/bsa-client-psk.conf
+Přepsat remote !!!!!
+
+Buď PŘENÉST KLÍČ ZE serveru
+
+nebo:
+echo "#
+# 2048 bit OpenVPN static key
+#
+-----BEGIN OpenVPN Static key V1-----
+412429f8a9a3fb26b80ccd178d5ba8e4
+d962625c17f3ef018d53545bcd8acbce
+f70de26192839d7f7252380fd7aefbd1
+65ee4998322de93b37ebcb01af3348a1
+4019f4ad52505f94034dd632d92a3d27
+b90342c0cb844c8d77b54076dad6435f
+57fce476cdaff267497f701ad49ee9f6
+bdac321a23d5c0ae9b4cbfb3924f390a
+14187686798a57b6d0988ecbb4208f50
+12fec1833c45153b03ba3f4953b05540
+53fc9ec40ecf398269b4ee25b8aec87b
+aef8f5702d0ec73abe773edf876bbfd9
+bcc38eadedb0d3590b8461648a21ef08
+76cca880b240a5f7331787a172959fe2
+6bf3bce96725bfcbe05dbcf9dd626902
+bc8a48856b063f6dbbade49833f90545
+-----END OpenVPN Static key V1-----" > /etc/openvpn/bsa-server-psk.key
+
+openvpn --config bsa-server-psk.conf &
+
+ping 192.168.4.160
+
+kilall -9 openvpn
+
+ip a del 192.168.4.160/24 dev ens18 
+```
+
+
+
 
 ## OpenVPN
 ```bash
