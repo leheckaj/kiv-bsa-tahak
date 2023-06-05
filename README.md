@@ -522,6 +522,97 @@ cat /var/log/logdir/2023/05/31/lehecka-base_mail.log
 https://unix.stackexchange.com/questions/21041/add-new-syslog-facility
 ```
 
-## OpenDKIM
+## Bind9 + OpenDKIM
+
 ```bash
+apt-get install bind9 dnsutils
+service bind9 start|stop|restart
+
+domain=jarda.bsa
+echo "\$TTL    604800
+@   IN  SOA $domain. root.localhost. (
+
+                  2     ; Serial / YYYYMMDDXX
+             604800     ; Refresh / seconds
+              86400     ; Retry / seconds
+            2419200 ; Expire / seconds
+             604800 )   ; Negative Cache TTL / explicitni TTL
+
+@         IN      NS                ns
+ns        IN      A                 127.0.0.1
+mail      IN      A                 127.0.0.1
+posta     IN      A		    127.0.0.1
+@         IN      MX           10   mail
+@         IN      MX           20   posta
+txt       IN      TXT               \"ahoj svete\"" > /etc/bind/db.$domain
+
+
+echo "
+zone \"$domain.\" in {
+    type master;
+    file \"/etc/bind/db.$domain\";
+};" >> /etc/bind/named.conf.local
+
+Pro jistotu přidej ručně:
+sed '3 i         listen-on { 192.168.0.224; };' /etc/bind/named.conf.options
+
+service bind9 restart
+
+host jarda.bsa 192.168.20.244
+```
+### Nastavení zón
+
+```bash
+zone "jarda.bsa." in {
+    type master;
+    file "/etc/bind/db.jarda.bsa";
+    allow-transfer {147.228.67.0/24;};
+};
+
+zone "lubos.bsa." in {
+    type slave;
+    file "/etc/bind/slave/slave.lubos.bsa";
+    masters {147.228.67.41;};
+};
+```
+
+## DNSSec
+```bsah
+Entropie:
+apt-get install haveged -y
+
+mkdir /etc/bind/keys
+cd /etc/bind/keys
+dnssec-keygen -a ECDSAP256SHA256 -fK jarda.bsa
+chmod g+r K*.private
+
+ln -s /etc/bind/db.jarda.bsa /var/cache/bind
+
+domain=jarda.bsa
+echo "
+zone \"$domain.\" in {
+    type master;
+    file \"/etc/bind/db.$domain\";
+    inline-signing yes;
+    auto-dnssec maintain;
+    key-directory \"/etc/bind/keys\";
+};" >> /etc/bind/named.conf.local
+
+service bind9 restart
+rndc reload
+rndc signing -list jarda.bsa
+rndc signing -nsec3param 1 0 10 deadbeef jarda.bsa 
+```
+
+## SPF
+```bind
+echo "
+@  	IN 	TXT 	\"v=spf1 mx a:server.bsa-jindra.bsa ~all\"" >> /etc/bind/db.$domain
+
+ZVYš Seriák!!!!!!!!!!!!!!!!!!!!
+
+SPF odkud je e-mail odkud to může chodit
+poslední věc říká co dělat když to nejde odtud
+-all :vše zahoď
+~all :funguje ale omarkuje
 ```
