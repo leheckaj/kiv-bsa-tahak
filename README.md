@@ -329,6 +329,11 @@ crontab -e
 @reboot iptables-restore /etc/network/iptables
 ```
 
+## OpenVPN - P2P
+```bash
+
+```
+
 ## OpenVPN
 ```bash
 cd /etc/ca
