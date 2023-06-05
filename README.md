@@ -398,6 +398,9 @@ bc8a48856b063f6dbbade49833f90545
 
 openvpn --config bsa-server-psk.conf &
 
+!!! UMÍSTIT TOTO NA PRVNÍ MÍSTO !!!
+nameserver 192.168.20.244 	v /etc/resolv.conf
+
 ping 192.168.4.160
 
 kilall -9 openvpn
