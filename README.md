@@ -642,6 +642,17 @@ echo "Toto je zprava" | logger -p mail.err
 cat /var/log/logdir/2023/05/31/lehecka-base_mail.log
 
 https://unix.stackexchange.com/questions/21041/add-new-syslog-facility
+
+
+
+
+
+
+$template errorLogs, "/var/log/errors/%$YEAR%/%$MONTH%/%$DAY%/errors.log"
+:programname, endsswith, "error"  ?errorLogs
+
+Tohle do /etc/rsyslog.d/bsa.conf
+
 ```
 
 
