@@ -3,6 +3,12 @@
 ## Zabezpečení operačního systému Linux
 
 ```bash
+apt purge man-db
+apt-get install --no-install-recommends nginx lvm2...
+
+sudo su -
+sudo pkill -9 -f apt
+
 apt-get install fail2ban
 FAIL2BAN !!!!!
 
@@ -12,7 +18,6 @@ apt-get install curl
 curl https://gitlab.com/leheckaj.keys >> ~/.ssh/authorized_keys
 
 echo "PermitRootLogin without-password
-AloowUsers root
 PasswordAuthentication no" >> /etc/ssh/sshd_config
 
 service sshd restart
