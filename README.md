@@ -604,6 +604,68 @@ cat /var/log/logdir/2023/05/31/lehecka-base_mail.log
 https://unix.stackexchange.com/questions/21041/add-new-syslog-facility
 ```
 
+
+
+## Vzdálené logování
+
+
+Vzdálené logování
+------------------
+```bash
+
+přidám
+# provides UDP syslog reception
+module(load="imudp")
+input(type="imudp" port="514")
+
+# provides TCP syslog reception
+module(load="imtcp")
+input(type="imtcp" port="514")
+
+# naslouchat na 0.0.0.0/514/UDP
+$UDPServerAddress 0.0.0.0
+$UDPServerRun 514
+
+$RepeatedMsgReduction on
+$RepeatedMsgContainsOrigionalMsg on
+
+# odesilat vsechny logy na server 147.228.67.150
+*.* @147.228.67.150
+
+
+watch --interval=1 ls -al R /var/log/logdir
+
+apache 2 přesusnu: Listen 8888 /etc/apache2/ports.conf
+sni - server name invocation - ke kterému serveru chci přistupovat - protože už bych během handshaku musel říci kam chci přistupovat
+
+apache co loadne jako první je default ---- to je rozdíl oproti nginx
+soft header request, sni - server name
+ad logování z apache2
+
+
+tee -  zapisuje jak do souboru, tak do souboru daného jako parameter -a
+
+vim /usr/local/bin/http_log_error
+bin bash hlavička -sheban
+cat |/usr/bin/tee -a /var/log/www/error.log  | /usr/bin/logger -t httpd -p local6.err
+
+grep usr 000
+
+do 000-default.conf
+errorlog "|/usr/local/bin/http_log_error"
+accesslog "|/usr/local/bin/http_log_access" combined
+
+mkdir -p /var/log/www/ && chown www-data:adm /var/log/www
+chmod +x /usr/local/bin/http_log_error
+chmod +x /usr/local/bin/http_log_access
+ 
+ ls /var/log/www
+```
+
+
+
+
+
 ## Bind9 + OpenDKIM
 
 ```bash
