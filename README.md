@@ -408,7 +408,7 @@ kilall -9 openvpn
 ip a del 192.168.4.160/24 dev ens18 
 ```
 
-## OpenVPN - XXXXX
+## OpenVPN - XXXXX Nejpravděpodobněji funkční verze Multiklient
 ```bash
 https://two-oes.medium.com/how-to-setup-a-vpn-connection-with-openvpn-d2944b5ca768
 
