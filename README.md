@@ -408,7 +408,47 @@ kilall -9 openvpn
 ip a del 192.168.4.160/24 dev ens18 
 ```
 
+## OpenVPN - XXXXX
+```bash
+https://two-oes.medium.com/how-to-setup-a-vpn-connection-with-openvpn-d2944b5ca768
 
+apt install -y openvpn easy-rs openssl
+cd /etc/openvpn/
+cp -r /usr/share/easy-rsa /etc/openvpn/
+cd /etc/openvpn/easy-rsa/3/
+
+touch vars
+
+chmod +x vars
+
+./easyrsa init-pki
+./easyrsa build-ca
+
+./easyrsa gen-req my-server nopass
+./easyrsa sign-req server my-server
+
+# openssl verify -CAfile pki/ca.crt pki/issued/my-server.crt
+
+./easyrsa gen-dh
+./easyrsa gen-crl
+
+cp pki/ca.crt /etc/openvpn/server/
+cp pki/issued/my-server.crt /etc/openvpn/server/
+cp pki/private/my-server.key /etc/openvpn/server/
+cp pki/dh.pem /etc/openvpn/server/
+cp pki/crl.pem /etc/openvpn/server/
+
+systemctl start openvpn@server
+
+
+./easyrsa gen-req client01 nopass
+./easyrsa sign-req client client01
+openssl verify -CAfile pki/ca.crt pki/issued/client01.crt
+cp pki/ca.crt /etc/openvpn/client/
+cp pki/issued/client01.crt /etc/openvpn/client/
+cp pki/private/client01.key /etc/openvpn/client/
+
+```
 
 
 ## OpenVPN
