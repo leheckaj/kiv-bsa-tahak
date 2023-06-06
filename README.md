@@ -258,7 +258,7 @@ ssl_certificate /etc/ca/pki/issued/server.jarda.bsa.crt;
 ssl_certificate_key /etc/ca/pki/private/server.jarda.bsa.key; 
 
 echo "server{
-      listen 8443 default_server;
+      listen 8443 default_server ssl;
       
       ssl_certificate /etc/ca/pki/issued/server.jarda.bsa.crt;
       ssl_certificate_key /etc/ca/pki/private/server.jarda.bsa.key; 
